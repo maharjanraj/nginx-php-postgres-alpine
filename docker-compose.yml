@@ -1,0 +1,45 @@
+version: '2'
+
+services:
+ web:
+  container_name: ${PROJECT_NAME}_web
+  image: nginx:alpine
+  ports:
+   - "${WEB_PORT}:80"
+  volumes_from:
+   - app
+  volumes:
+   - ./config/default.conf:/etc/nginx/conf.d/default.conf
+  links:
+   - app
+
+ app:
+  container_name: ${PROJECT_NAME}_app
+  build: 
+   context: ./config
+   dockerfile: web.docker
+  volumes:
+   - ${PROJECT_PATH}:/app
+  links:
+   - db
+  environment:
+   - "DB_PORT=${DB_PORT}"
+   - "DB_HOST=db"
+
+ db:
+  container_name: ${PROJECT_NAME}_db
+  image: postgres:9.6.1-alpine
+  environment:
+   - POSTGRES_USER=${POSTGRES_USER}
+   - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+   - PGDATA=${PGDATA}
+   - POSTGRES_DB=${POSTGRES_DB}
+  volumes: 
+   - dbdata:/dbdata
+  ports:
+   - "${DB_PORT}:5432"
+
+volumes:
+ dbdata:
+  external:
+   name: ${DB_VOLUME}
