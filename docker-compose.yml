@@ -17,7 +17,7 @@ services:
   container_name: ${PROJECT_NAME}_app
   build: 
    context: ./config
-   dockerfile: web.docker
+   dockerfile: app.docker
   volumes:
    - ${PROJECT_PATH}:/app
   links:
